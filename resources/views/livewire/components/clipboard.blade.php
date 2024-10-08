@@ -17,7 +17,7 @@ new class extends Component {
 <div>
     <div class="w-full max-w-sm">
         <div class="mb-2 flex justify-between items-center">
-            <label for="website-url" class="text-sm font-medium text-gray-900 dark:text-white">Verify your website:</label>
+            <label for="website-url" class="text-sm font-medium text-gray-600">Share the link below with your friend and play together:</label>
         </div>
         <div class="flex items-center">
             <span class="flex-shrink-0 z-10 inline-flex items-center py-2.5 px-4 text-sm font-medium text-center text-gray-900 bg-gray-100 border border-gray-300 rounded-s-lg dark:bg-gray-600 dark:text-white dark:border-gray-600">URL</span>
@@ -42,6 +42,5 @@ new class extends Component {
                 <div class="tooltip-arrow" data-popper-arrow></div>
             </div>
         </div>
-        <p id="helper-text-explanation" class="mt-2 text-sm text-gray-500 dark:text-gray-400">Security certificate is required for approval</p>
     </div>
 </div>

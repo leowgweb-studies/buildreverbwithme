@@ -18,7 +18,10 @@ class MoveMade implements ShouldBroadcastNow
     /**
      * Create a new event instance.
      */
-    public function __construct(public array $payload)
+    public function __construct(
+        public array $payload,
+        public string $gameId,
+    )
     {
         //
     }
@@ -31,7 +34,7 @@ class MoveMade implements ShouldBroadcastNow
     public function broadcastOn(): array
     {
         return [
-            new Channel('move-made'),
+            new Channel("move-made.{$this->gameId}"),
         ];
     }
 

@@ -14,7 +14,6 @@
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
     <body class="antialiased font-sans flex flex-col items-center justify-center min-h-screen">
-{{--        <livewire:toggle />--}}
-    <livewire:board/>
+        <livewire:toggle />
     </body>
 </html>

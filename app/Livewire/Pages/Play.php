@@ -16,15 +16,23 @@ class Play extends Component
     public function mount(string $gameKey = null): void
     {
         if (!$gameKey) {
-            if (!session()->has('host_user')){
-                session()->put('host_user', str()->of(str()->ulid())->lower());
-                $this->gameKey = session('host_user');
+            if (!session()->has('player')){
+                session()->put('player', [
+                    'id' => str()->of(str()->ulid())->lower(),
+                    'symbol' => 'X',
+                ]);
+                $this->gameKey = session('player')['id'];
 
                 Cache::forever($this->gameKey, uniqid('game_', true));
             } else {
-                $this->gameKey = session('host_user');
+                $this->gameKey = session('player')['id'];
             }
         } else {
+            session()->put('player', [
+                'id' => str()->of(str()->ulid())->lower(),
+                'symbol' => '◯',
+            ]);
+
             $this->gameKey = $gameKey;
         }
 
