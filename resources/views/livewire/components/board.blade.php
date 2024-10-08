@@ -1,6 +1,7 @@
 <?php
 
 use App\Events\MoveMade;
+use App\Utils\PlayCheck;
 use Illuminate\Support\Facades\Cache;
 use Livewire\Attributes\On;
 use Livewire\Volt\Component;
@@ -45,6 +46,10 @@ new class extends Component {
         $this->board[$payload['position']['y']][$payload['position']['x']] = $payload['player']['symbol'];
         Cache::forever("board_{$this->gameId}", $this->board);
         $this->active = !$this->active;
+
+        if (PlayCheck::win($this->board)) {
+            dd('win: ' . $payload['player']['id']);
+        }
     }
 }; ?>
 
