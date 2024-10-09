@@ -1,12 +1,17 @@
 <?php
 
 use App\Events\MoveMade;
+use App\Utils\CheckGame;
+use App\Utils\GameStatus;
 use App\Utils\PlayCheck;
 use Illuminate\Support\Facades\Cache;
 use Livewire\Attributes\On;
+use Livewire\Attributes\Reactive;
 use Livewire\Volt\Component;
 
 new class extends Component {
+    public string $gameKey;
+
     public string $gameId;
 
     public array $player = [];
@@ -15,16 +20,20 @@ new class extends Component {
 
     public bool $active;
 
+    public mixed $gameStatus;
+
     public function mount(string $gameKey): void
     {
-        $this->gameId = Cache::get($gameKey);
+        $this->gameKey = $gameKey;
+        $this->gameId = Cache::get($this->gameKey);
         $this->player = session('player');
-        $this->active = $gameKey == $this->player['id'];
+        $this->active = $this->gameKey == $this->player['id'];
         $this->board = Cache::rememberForever("board_{$this->gameId}", fn() => [
             [null, null, null],
             [null, null, null],
             [null, null, null],
         ]);
+        $this->gameStatus = GameStatus::InProgress;
     }
 
     public function makeMove(int $y, int $x): void
@@ -47,20 +56,42 @@ new class extends Component {
         Cache::forever("board_{$this->gameId}", $this->board);
         $this->active = !$this->active;
 
-        if (PlayCheck::win($this->board)) {
-            dd('win: ' . $payload['player']['id']);
-        }
+        $isCurrentPlayer = $this->player['id'] == $payload['player']['id'];
+
+        $this->gameStatus = CheckGame::run(
+            $this->board,
+            $isCurrentPlayer
+        );
+    }
+
+    #[On('echo:restart.{gameId},RestartGame')]
+    public function restartGame(): void
+    {
+        Cache::forget("board_{$this->gameId}");
+
+        $this->board = Cache::rememberForever("board_{$this->gameId}", fn() => [
+            [null, null, null],
+            [null, null, null],
+            [null, null, null],
+        ]);
+
+        $this->gameStatus = GameStatus::InProgress;
+
+        $this->active = !$this->active;
     }
 }; ?>
 
 <div>
-    <div class="text-center m-3">
-        @if($active)
-            <span>You Turn</span>
-        @else
-            <span>Waiting for opponent</span>
-        @endif
-    </div>
+    @if($this->gameKey == $this->player['id'])
+        <livewire:components.clipboard :gameKey="$gameKey"/>
+    @endif
+
+    <livewire:components.active-player :active="$active"/>
+
+    @if($gameStatus !== GameStatus::InProgress)
+        <livewire:components.show-result :gameStatus="$gameStatus" :gameId="$gameId"/>
+    @endif
+
     <div class="grid grid-cols-3 gap-2 bg-white p-4 rounded-lg shadow-lg">
         @foreach($this->board as $y => $row)
             @foreach($row as $x => $col)
