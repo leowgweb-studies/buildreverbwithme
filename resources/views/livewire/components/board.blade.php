@@ -1,12 +1,11 @@
 <?php
 
 use App\Events\MoveMade;
+use App\Events\StartMatch;
 use App\Utils\CheckGame;
 use App\Utils\GameStatus;
-use App\Utils\PlayCheck;
 use Illuminate\Support\Facades\Cache;
 use Livewire\Attributes\On;
-use Livewire\Attributes\Reactive;
 use Livewire\Volt\Component;
 
 new class extends Component {
@@ -22,6 +21,8 @@ new class extends Component {
 
     public mixed $gameStatus;
 
+    public bool $startMatch = false;
+
     public function mount(string $gameKey): void
     {
         $this->gameKey = $gameKey;
@@ -34,6 +35,17 @@ new class extends Component {
             [null, null, null],
         ]);
         $this->gameStatus = GameStatus::InProgress;
+
+        if ($this->gameKey != $this->player['id']) {
+            $this->startMatch = true;
+            broadcast(new StartMatch($this->gameId))->toOthers();
+        }
+    }
+
+    #[On('echo:start-match.{gameId},StartMatch')]
+    public function onStartMatch(): void
+    {
+        $this->startMatch = true;
     }
 
     public function makeMove(int $y, int $x): void
@@ -82,7 +94,7 @@ new class extends Component {
 }; ?>
 
 <div>
-    @if($this->gameKey == $this->player['id'])
+    @if(!$this->startMatch)
         <livewire:components.clipboard :gameKey="$gameKey"/>
     @endif
 
@@ -92,11 +104,16 @@ new class extends Component {
         <livewire:components.show-result :gameStatus="$gameStatus" :gameId="$gameId"/>
     @endif
 
-    <div class="grid grid-cols-3 gap-2 bg-white p-4 rounded-lg shadow-lg">
+    <div class="w-full grid grid-cols-3 place-items-center divide-x-reverse divide-y-reverse divide-gray-700">
         @foreach($this->board as $y => $row)
             @foreach($row as $x => $col)
                 <button :disabled="!$wire.active" wire:click="makeMove({{$y}}, {{$x}})"
-                        class="w-24 h-24 bg-gray-200 disabled:cursor-not-allowed flex justify-center items-center text-4xl font-bold cursor-pointer hover:bg-gray-300 transition-colors duration-300 rounded">
+                        class="w-full h-24 bg-transparent border-black disabled:cursor-not-allowed flex justify-center items-center text-4xl font-bold cursor-pointer hover:bg-gray-500/20 transition-colors duration-300"
+                        :class="{
+                           'border-r-4': {{ $x }} < 3 - 1,
+                           'border-b-4': {{ $y }} < 3 - 1,
+                        }"
+                >
                     <span>{{ $this->board[$y][$x] }}</span>
                 </button>
             @endforeach
