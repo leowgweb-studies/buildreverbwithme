@@ -5,6 +5,7 @@ use App\Events\StartMatch;
 use App\Utils\CheckGame;
 use App\Utils\GameStatus;
 use Illuminate\Support\Facades\Cache;
+use Livewire\Attributes\Computed;
 use Livewire\Attributes\On;
 use Livewire\Volt\Component;
 
@@ -91,6 +92,12 @@ new class extends Component {
 
         $this->active = !$this->active;
     }
+
+    #[Computed]
+    public function showResult(): bool
+    {
+        return $this->gameStatus !== GameStatus::InProgress;
+    }
 }; ?>
 
 <div>
@@ -98,25 +105,27 @@ new class extends Component {
         <livewire:components.clipboard :gameKey="$gameKey"/>
     @endif
 
-    <livewire:components.active-player :active="$active"/>
-
-    @if($gameStatus !== GameStatus::InProgress)
+    @if($this->showResult)
         <livewire:components.show-result :gameStatus="$gameStatus" :gameId="$gameId"/>
     @endif
 
-    <div class="w-full grid grid-cols-3 place-items-center divide-x-reverse divide-y-reverse divide-gray-700">
-        @foreach($this->board as $y => $row)
-            @foreach($row as $x => $col)
-                <button :disabled="!$wire.active" wire:click="makeMove({{$y}}, {{$x}})"
-                        class="w-full h-24 bg-transparent border-black disabled:cursor-not-allowed flex justify-center items-center text-4xl font-bold cursor-pointer hover:bg-gray-500/20 transition-colors duration-300"
-                        :class="{
-                           'border-r-4': {{ $x }} < 3 - 1,
-                           'border-b-4': {{ $y }} < 3 - 1,
-                        }"
-                >
-                    <span>{{ $this->board[$y][$x] }}</span>
-                </button>
+    @if($this->startMatch && !$this->showResult)
+        <livewire:components.active-player :active="$active"/>
+
+        <div class="w-full md:w-3/5 lg:w-1/2 xl:w-5/12 p-6 lg:p-4 mx-auto grid grid-cols-3 place-content-center">
+            @foreach($this->board as $y => $row)
+                @foreach($row as $x => $col)
+                    <button :disabled="!$wire.active" wire:click="makeMove({{$y}}, {{$x}})"
+                            class="w-full h-24 md:h-32 lg:h-36 border-gray-800 disabled:cursor-not-allowed flex justify-center items-center text-4xl font-bold cursor-pointer hover:bg-gray-500/20 transition-colors duration-300"
+                            :class="{
+                               'border-r-2': {{ $x }} < 3 - 1,
+                               'border-b-2': {{ $y }} < 3 - 1,
+                            }"
+                    >
+                        <span>{{ $this->board[$y][$x] }}</span>
+                    </button>
+                @endforeach
             @endforeach
-        @endforeach
-    </div>
+        </div>
+    @endif
 </div>

@@ -10,7 +10,7 @@ new class extends Component {
 }; ?>
 
 <div class="flex justify-center m-3 caveat-font">
-    <span class="flex justify-center items-center text-2xl font-bold py-0.5">
+    <span class="flex justify-center items-center text-3xl font-bold py-0.5">
     @if($active)
         <span class="relative flex h-3 w-3">
             <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
