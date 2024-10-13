@@ -1,10 +1,9 @@
 <?php
 
-use App\Livewire\Pages\Play;
 use Illuminate\Support\Facades\Route;
-// optional params
-Route::view('/', 'home')->name('game.home');
-Route::get('/play/{gameKey?}', Play::class)->name('game.play');
+
+Route::view('/', 'home');
+
 
 
 require __DIR__.'/auth.php';

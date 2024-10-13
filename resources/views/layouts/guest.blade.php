@@ -15,23 +15,16 @@
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
     <body class="font-sans text-gray-900 antialiased">
-        <div style="background-image: url('{{ asset('images/bg_notebook_leaf.png') }}')" class="min-h-screen grid grid-cols-1 content-between p-6 bg-transparent bg-center bg-cover bg-no-repeat">
-            <header class="flex justify-center items-center">
+        <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-gray-100">
+            <div>
                 <a href="/" wire:navigate>
-                    <x-application-logo class="w-16 h-16 fill-current text-gray-500 -skew-x-12 opacity-40" />
+                    <x-application-logo class="w-20 h-20 fill-current text-gray-500" />
                 </a>
-            </header>
+            </div>
 
-            <main class="w-full flex flex-col justify-center items-center overflow-hidden">
+            <div class="w-full sm:max-w-md mt-6 px-6 py-4 bg-white shadow-md overflow-hidden sm:rounded-lg">
                 {{ $slot }}
-            </main>
-
-            <footer class="text-center">
-                <span class="text-gray-400 caveat-font">
-                    Created with <span class="text-red-300"><3</span> by <a href="https://lauroguedes.dev" target="_blank" class="underline underline-offset-1 hover:opacity-80">Lauro Guedes</a> |
-                    <a href="https://github.com/lauroguedes/tic-tac-toe-game" target="_blank" class="underline underline-offset-1 hover:opacity-80">Github Project</a>
-                </span>
-            </footer>
+            </div>
         </div>
     </body>
 </html>
