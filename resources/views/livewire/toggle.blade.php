@@ -2,6 +2,7 @@
 
 use App\Events\MouseMoved;
 use App\Events\SwitchFlipped;
+use Illuminate\Support\Facades\Broadcast;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Session;
 use Livewire\Attributes\Locked;
