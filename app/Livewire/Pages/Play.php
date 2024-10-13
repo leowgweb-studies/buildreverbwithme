@@ -28,10 +28,12 @@ class Play extends Component
                 $this->gameKey = session('player')['id'];
             }
         } else {
-            session()->put('player', [
-                'id' => str()->of(str()->ulid())->lower(),
-                'symbol' => '◯',
-            ]);
+            if (!session()->has('player')) {
+                session()->put('player', [
+                    'id' => str()->of(str()->ulid())->lower(),
+                    'symbol' => 'O',
+                ]);
+            }
 
             $this->gameKey = $gameKey;
         }

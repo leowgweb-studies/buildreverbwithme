@@ -8,4 +8,5 @@ enum GameStatus: string
     case Lose = 'lose';
     case Draw = 'draw';
     case InProgress = 'in_progress';
+    case Pending = 'pending';
 }

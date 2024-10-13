@@ -1,8 +1,10 @@
 <?php
 
+use App\Events\FinishGame;
 use App\Events\RestartGame;
 use App\Utils\GameStatus;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Cache;
 use Livewire\Attributes\Reactive;
 use Livewire\Volt\Component;
 
@@ -14,7 +16,18 @@ new class extends Component {
 
     public function restartGame(): void
     {
+        Cache::forget("board_{$this->gameId}");
+
         RestartGame::dispatch($this->gameId);
+    }
+
+    public function finishGame(): void
+    {
+        Cache::forget("game_{$this->gameId}");
+        Cache::forget("board_{$this->gameId}");
+        Cache::forget("active_player_{$this->gameId}");
+
+        FinishGame::dispatch($this->gameId);
     }
 
     public function getExpression(): string
@@ -55,9 +68,21 @@ new class extends Component {
 <div class="caveat-font">
     <div class="flex flex-col text-center space-y-5">
         <div>{!! $this->getExpression() !!}</div>
-
         @if($gameStatus === GameStatus::Win || $gameStatus === GameStatus::Draw)
-            <button wire:click="restartGame" class="font-bold text-blue-700 underline underline-offset-2 uppercase hover:opacity-80 text-lg">Restart Game</button>
+            <div class="flex justify-center items-center space-x-4">
+                <button wire:click="restartGame"
+                        class="font-bold text-blue-700 underline underline-offset-2 uppercase hover:opacity-80 text-lg">
+                    Restart Game
+                </button>
+                <button wire:click="finishGame"
+                        class="font-bold text-red-700 underline underline-offset-2 uppercase hover:opacity-80 text-lg">
+                    Finish Game
+                </button>
+            </div>
+        @endif
+
+        @if($gameStatus === GameStatus::Lose)
+            <p class="text-blue-700 text-xl">Wait until your friend restarts or finishes the game ;).</p>
         @endif
     </div>
 </div>
